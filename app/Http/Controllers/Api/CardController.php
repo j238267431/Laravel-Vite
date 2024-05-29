@@ -7,6 +7,7 @@ use App\Http\Requests\CardStoreRequest;
 use Illuminate\Http\Request;
 use App\Models\Card;
 use App\Http\Resources\CardResource;
+use Illuminate\Http\Response;
 
 class CardController extends Controller
 {
@@ -46,8 +47,10 @@ class CardController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Card $card)
     {
-        //
+        $card->delete();
+
+        return response('null', Response::HTTP_NO_CONTENT);
     }
 }

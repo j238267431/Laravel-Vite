@@ -20,12 +20,12 @@
 
    <h1 class="mb-3">Доски</h1>
 
-   <div v-if="loading" role="status">
+   <div v-if="$store.state.loading" role="status">
       <Loading/>
    </div>
    <div  v-else >
-      <div v-if="desks.length > 0" class="grid grid-flow-row-dense grid-cols-3 grid-rows-3">
-         <div  v-for="desk in desks" :key="desk.id" class="relative">
+      <div v-if="$store.state.desks.length > 0" class="grid grid-flow-row-dense grid-cols-3 grid-rows-3">
+         <div  v-for="desk in $store.state.desks" :key="desk.id" class="relative">
             <router-link :to="{name: 'showDesk', params: {deskid: desk.id}}"  href="#" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-t shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ desk.name }}</h5>
                <p class="font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
@@ -62,7 +62,23 @@ export default {
          loading: true,
          name: '',
          errors: [],
-         justLoaded: false
+         justLoaded: false,
+         deleteDeskParams:{
+            params:{
+               _method: 'DELETE',
+            },
+            method: 'post',
+            var: 'desks',
+         },
+         getDeskParams:{
+            method: 'get',
+            var: 'desks',
+         },
+         createDeskParams:{
+            params:{},
+            method: 'post',
+            var: 'desks',
+         },
       }
    },
    components:{
@@ -72,25 +88,35 @@ export default {
       ErrorMessage
    },
    methods:{
+
       deleteDesk(id){
-         this.loading = true
          if(confirm('Вы действительно хотите удалить доску?')){
-            console.log('deleteDesk')
-            
-            axios.post('/api/desks/'+id,{
-            _method: 'DELETE'
-         })
-         .then(response => {
-            this.desks = this.desks.filter(item => item.id !== id);
-         })
-         .catch(error => {
-            console.log(error);
-            this.errored = true;
-         })
-         .finally(() => {
-            this.loading = false;
-         })
+            this.$store.commit('set',{
+               type: 'loading',
+               var:'loading',
+               val: true
+            })
+            this.deleteDeskParams.url = this.$store.state.deskUrl + id
+            this.deleteDeskParams.id = id
+            this.$store.commit('axiosInstance', this.deleteDeskParams)
          }
+         // this.loading = true
+         // if(confirm('Вы действительно хотите удалить доску?')){
+         //    console.log('deleteDesk')
+         //    axios.post('/api/desks/'+id,{
+         //    _method: 'DELETE'
+         // })
+         // .then(response => {
+         //    this.desks = this.desks.filter(item => item.id !== id);
+         // })
+         // .catch(error => {
+         //    console.log(error);
+         //    this.errored = true;
+         // })
+         // .finally(() => {
+         //    this.loading = false;
+         // })
+         // }
       },
       
       setJustLoaded(){
@@ -98,43 +124,54 @@ export default {
       },
       
       getAllDesks(){
-         axios.get('/api/desks')
-         .then(response => {
-            this.desks = response.data.data
+         this.$store.commit('set',{
+            type: 'loading',
+            var:'loading',
+            val: true
          })
-         .catch(error => {
-            console.log(error);
-            this.errored = true;
-         })
-         .finally(() => {
-            this.loading = false;
-         })
+         this.getDeskParams.url = this.$store.state.deskUrl
+         this.$store.commit('axiosInstance', this.getDeskParams)
+
+         // axios.get('/api/desks')
+         // .then(response => {
+         //    this.desks = response.data.data
+         // })
+         // .catch(error => {
+         //    console.log(error);
+         //    this.errored = true;
+         // })
+         // .finally(() => {
+         //    this.loading = false;
+         // })
       },
       createDesk(){
          this.loading = true
 
             console.log('createDesk')
             
-         axios.post('/api/desks/',{
-            name: this.name
-         })
-         .then(response => {
-            this.name = null;
-            this.justLoaded= true;
-            this.desks.unshift(response.data.data);
-         })
-         .catch(error => {
-            console.log(error);
-            this.errors = [];
-            if(error.response.data.errors.name){
-               this.errors.push(error.response.data.errors.name)
-               this.errored = true;
-            }
+         this.createDeskParams.url = this.$store.state.deskUrl
+         this.createDeskParams.params.name = this.name
+         this.$store.commit('axiosInstance', this.createDeskParams)
+         // axios.post('/api/desks/',{
+         //    name: this.name
+         // })
+         // .then(response => {
+         //    this.name = null;
+         //    this.justLoaded= true;
+         //    this.desks.unshift(response.data.data);
+         // })
+         // .catch(error => {
+         //    console.log(error);
+         //    this.errors = [];
+         //    if(error.response.data.errors.name){
+         //       this.errors.push(error.response.data.errors.name)
+         //       this.errored = true;
+         //    }
 
-         })
-         .finally(() => {
-            this.loading = false;
-         })
+         // })
+         // .finally(() => {
+         //    this.loading = false;
+         // })
       }
    },
    computed: {

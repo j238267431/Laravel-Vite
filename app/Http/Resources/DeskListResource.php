@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
+use App\Models\Card;
 class DeskListResource extends JsonResource
 {
     /**
@@ -18,7 +18,7 @@ class DeskListResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'created_at' => $this->created_at,
-            'cards' => CardResource::collection($this->card),
+            'cards' => CardResource::collection($this->card)->sortByDesc('created_at')->all(),
         ];
     }
 }
