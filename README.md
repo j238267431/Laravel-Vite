@@ -1,6 +1,6 @@
 <h1>как запустить</h1>
 <ul>
-<li>в первом терминале **docker-compose up**</li>
+<li>в первом терминале <b>docker-compose up</b></li>
 <li>во втором терминале **npm run dev**</li>
 <li>в .env файле прописать</li>
     <p>DB_CONNECTION=mysql</p>
