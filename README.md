@@ -3,21 +3,21 @@
 <li>в первом терминале **docker-compose up**</li>
 <li>во втором терминале **npm run dev**</li>
 <li>в .env файле прописать</li>
-    DB_CONNECTION=mysql
-    DB_HOST=mysql
-    DB_PORT=3306
-    DB_DATABASE=laravel-vite
-    DB_USERNAME=root
-    DB_PASSWORD=root
+    <p>DB_CONNECTION=mysql</p>
+    <p>DB_HOST=mysql</p>
+    <p>DB_PORT=3306</p>
+    <p>DB_DATABASE=laravel-vite</p>
+    <p>DB_USERNAME=root</p>
+    <p>DB_PASSWORD=root</p>
 <li>настроить соединение с базой в менеджере баз данных</li>
-    Сервер **Localhost**
-    Порт **33063**
-    Пользователь **root**
-    Пароль **root**
+    <p>Сервер **Localhost**</p>
+    <p>Порт **33063**</p>
+    <p>Пользователь **root**</p>
+    <p>Пароль **root**</p>
 <li>в третьем терминале выполнить </li>
-    1. **Docker-compose exec fpm bash**
-    2. cd ../laravel-docker
-    3. php artisan migrate
+    <p>1. **Docker-compose exec fpm bash**</p>
+    <p>2. cd ../laravel-docker</p>
+    <p>3. php artisan migrate</p>
 
 <li>в браузере открыть http://localhost:8099/</li>
 </ul>
