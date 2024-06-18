@@ -4,7 +4,7 @@
    <span class="font-medium">Danger alert!</span> Ошибка загрузки данных
    </div>
 
-   <div v-if="loading" role="status">
+   <div v-if="false" role="status">
      <Loading/>
    </div>
    <div v-else>
@@ -15,12 +15,10 @@
             name="name" 
             @blur="handleSubmit($event, saveName)" 
             type="text" 
-            v-model="name" 
+            v-model="$store.state.deskName" 
             id="first_name" />
          <ErrorMessage class="mt-2, text-sm, text-red-600" name="name" />
       </Form>
-      <!-- <p v-if="!$v.name.required" class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium text-red-600">Oops!</span> Обязательное поле</p>
-      <p v-if="!$v.name.maxLength" class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium text-red-600">Oops!</span> Максимальная длина: {{$v.name.$params.maxLength.max}}</p> -->
    </div>
    <Form @submit="createList" :validation-schema="schemaList">
     <div class="grid gap-6 mb-6 md:grid-cols-2">
@@ -79,7 +77,7 @@
                <div v-if="$store.state.loadingCard && $store.state.desk_list_input_id == deskList.id" role="status">
                   <Loading/>
                </div>
-               <ShowList ref="showList" v-else :cards="deskList.cards" :listId= "deskList.id"/>
+               <ShowList ref="showList" v-else :cards="deskList.cards" :listId= "deskList.id" :deskid="deskid"/>
             </div>
             <!-- </router-link> -->
             <button @click="deleteList(deskList.id)" class="w-full block max-w-sm mb-3 bg-transparent dark:border-gray-700 shadow hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-gray-200 hover:border-transparent rounded-b">
@@ -101,7 +99,8 @@ const showList = ref(null)
 
 export default {
    props: [
-      'deskid'
+      'deskid',
+      'getDeskParams'
    ],
    components: {
       Loading,
@@ -162,7 +161,7 @@ export default {
             params: {
                _method: 'PUT'
             },
-         }
+         },
       }
    },
    methods:{
@@ -172,21 +171,6 @@ export default {
          this.updateListsParams.params.name = name
          this.$store.state.loadingList = true
          this.$store.commit('axiosInstance',this.updateListsParams)
-         // this.loadingList = true;
-      //    axios.post('/api/desk-lists/'+id,{
-      //          _method: 'PUT',
-      //          name: name,
-      //       })
-      //       .then(response => {
-      //          this.desk_list_input_id = null;
-      //          // this.deskLists = this.deskLists.filter(item => item.id !== deskListid);
-      //       })
-      //       .catch(error => {
-      //          console.log(error);
-      //       })
-      //       .finally(() => {
-      //          this.loadingList = false;
-      //       })
       },
       setJustLoaded(){
          this.justLoaded = false;
@@ -199,22 +183,6 @@ export default {
             this.deleteListParams.id = deskListid
             this.$store.commit('axiosInstance',this.deleteListParams)
          }
-         // if(confirm('Вы действительно хотите удалить лист?')){
-         //    axios.post('/api/desk-lists/'+deskListid,{
-         //       _method: 'DELETE',
-         //    })
-         //    .then(response => {
-         //       console.log('response',response);
-         //       console.log('this.deskLists',this.deskLists);
-         //       this.deskLists = this.deskLists.filter(item => item.id !== deskListid);
-         //    })
-         //    .catch(error => {
-         //       console.log(error);
-         //    })
-         //    .finally(() => {
-         //       this.loading = false;
-         //    })
-         // }
       },
       createList(){
          console.log('createList')
@@ -222,26 +190,6 @@ export default {
          this.createListParams.var = this.listVar
          this.createListParams.params.name = this.listName;
          this.$store.commit('axiosInstance',this.createListParams)
-         
-         // this.loading = true
-
-         //    console.log('createDesk')
-            
-         // axios.post('/api/desk-lists/',{
-         //    name: this.listName,
-         //    desk_id: this.deskid
-         // })
-         // .then(response => {
-         //    this.listName = '';
-         //    this.deskLists.unshift(response.data.data);
-         //    this.justLoaded=true;
-         // })
-         // .catch(error => {
-         //    console.log(error);
-         // })
-         // .finally(() => {
-         //    this.loading = false;
-         // })
       },
       createCard(deskListid){
 
@@ -254,52 +202,14 @@ export default {
          this.createCardParams.var = this.$store.state.cardVar
          this.createCardParams.params = {name: this.cardNames[deskListid], desk_list_id: deskListid}
          this.$store.commit('axiosInstance', this.createCardParams)
-         // axios.post('/api/card/',{
-         //    name: this.cardNames[deskListid],
-         //    desk_list_id: deskListid
-         // })
-         // .then(response => {
-         //    // this.listName = '';
-         //    // this.deskLists.unshift(response.data.data);
-         //    // this.justLoaded=true;
-         //    // this.$store.commit('axiosInstance',this.deskLists)
-         //    this.$store.commit('set',{
-         //          var: 'cardCreate',
-         //          card: response.data.data,
-         //          listId: deskListid
-         //       })
-         // })
-         // .catch(error => {
-         //    console.log(error);
-         // })
-         // .finally(() => {
-         //    // this.loading = false;
-         //    this.$store.commit('set',{
-         //       var:'loading'
-         //    })
-         // })
          },
       saveName(){
          this.updateDeskParams.url = this.$store.state.deskUrl + this.deskid;
-         this.updateDeskParams.params.name = this.name;
+         this.updateDeskParams.params.name = this.$store.state.deskName;
          this.$store.commit('axiosInstance', this.updateDeskParams)
 
 
          console.log('this.name', this.name)
-         // axios.post('/api/desks/'+this.deskid,{
-         //    _method: 'PUT',
-         //    name: this.name
-         // })
-         // .then(response => {
-         //    this.name = response.data.data.name
-         // })
-         // .catch(error => {
-         //    console.log(error);
-         //    this.errored = true;
-         // })
-         // .finally(() => {
-         //    this.loading = false;
-         // })
       }
    },
    computed: {
@@ -307,8 +217,7 @@ export default {
          if(!this.justLoaded){
             return yup.object({
                name: yup.string().required('Это поле обязательно для заполнения'),
-               
-               // cardName: yup.string().required('Это поле обязательно для заполнения'),
+
             });
          }
       },
@@ -321,17 +230,12 @@ export default {
       }
    },
    mounted(){
-         axios.get('/api/desks/'+this.deskid)
-         .then(response => {
-            this.name = response.data.data.name
-         })
-         .catch(error => {
-            console.log(error);
-            this.errored = true;
-         })
-         .finally(() => {
-            this.loading = false;
-         })
+
+      this.$store.commit('set', {
+         type: 'deskName',
+         var: 'deskName',
+         deskid: this.deskid
+      })
          this.$store.commit('axiosInstance',this.deskLists)
       },
 

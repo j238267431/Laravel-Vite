@@ -31,17 +31,18 @@ class CardController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Card $card)
     {
-        //
+        return new CardResource($card);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CardStoreRequest $request, Card $card)
     {
-        //
+        $card->update($request->validated());
+        return new CardResource($card);
     }
 
     /**

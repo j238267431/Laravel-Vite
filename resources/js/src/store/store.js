@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+import router from '../router/router';
 const store = createStore({
    state () {
      return {
@@ -17,34 +18,29 @@ const store = createStore({
       cardVar: 'cards',
       loadingList: false,
       loadingCard: false,
+      deskName: null,
+      cardName: null,
+      deskid: null,
      }
    },
    mutations: {
      set(state, value){
       switch (value.var){
-         case 'cards':
-            // state.deskLists.filter((item, k) => {
-            //    if(item.id === value.listId){
-            //       console.log(k);
-            //       state.deskLists[k].cards = state.deskLists[k].cards.filter(card => card.id !== value.cardId);
-            //    }
-            // });
-            break;
-         // case 'cardCreate':
-         //    state.deskLists.filter((item, k) => {
-         //       if(item.id === value.listId){
-         //          console.log(k);
-         //          state.deskLists[k].cards.unshift(value.card)
-         //          state.loadingCard = false;
-         //       }
-         //    });
-         //    // state.deskLists[value.listId].cards.unshift(value.card)
-         //    break;
          case 'deskLists':
             state.deskLists = value.val;
             break;
          case 'loading':
             state[value.type] = value.val;
+            break;
+         case 'deskName':
+              state.desks.filter((desk) => {
+               if(desk.id == value.deskid){
+                  state.deskName = desk.name
+               }
+            })
+         break;
+         default:
+            state[value.var] = value.val;
             break;
       }
      },
@@ -71,6 +67,8 @@ const store = createStore({
                switch(value.params._method){
                   case 'PUT': // update
                   state.desk_list_input_id = null
+                  router.push({ name: 'showDesk', params: { deskid: state.deskid } })
+                  // state.cardName = response.
                      break;
                   case 'DELETE':
                      if(value.action == 'deleteCardParams'){
@@ -118,31 +116,6 @@ const store = createStore({
       
       ;
      },
-   //   getDeskLists(state, value){
-   //    axios.get(value.url,{
-   //       params:{
-   //          desk_id: value[value.var]
-   //       }
-   //    })
-   //    .then(response => {
-   //       console.log('getDeskLists', response);
-   //       store.commit('set',{
-   //          var: 'deskLists',
-   //          val: response.data.data
-   //       })
-   //       this.deskLists.forEach(el=>{
-   //          this.cardNames[el.id] = ''
-   //       })
-   //       console.log('getDeskLists', response);
-   //    })
-   //    .catch(error => {
-   //       console.log(error);
-   //       this.errored = true;
-   //    })
-   //    .finally(() => {
-   //       this.loading = false;
-   //    })
-   // },
    }
  })
 
